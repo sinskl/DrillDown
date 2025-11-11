@@ -98,6 +98,12 @@ jobs:
           ./gradlew android:assembleRelease
           ./gradlew desktop:dist
 
+      - name: Show Android build outputs
+        run: find android/build -name "*.apk" -o -type d -name "outputs" | head -20
+
+      - name: Show project structure
+        run: tree android/build -L 4 || find android/build -type f -name "*.apk"
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
