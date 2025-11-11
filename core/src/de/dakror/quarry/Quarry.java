@@ -95,6 +95,33 @@ public class Quarry extends GameBase implements PlatformInterface {
         return versionNumber > 1 && !version.equals("debug");
     }
 
+    /**
+     * Get the locale based on user preferences
+     * Handles backward compatibility with old "german" boolean preference
+     */
+    public Locale getLocale() {
+        // First check new language preference
+        if (prefs.contains("language")) {
+            String language = prefs.getString("language", "en");
+            switch (language) {
+                case "de":
+                    return Locale.GERMAN;
+                case "zh":
+                    return Locale.CHINESE;
+                case "en":
+                default:
+                    return Locale.ENGLISH;
+            }
+        }
+
+        // Backward compatibility: migrate old "german" preference to new "language" preference
+        boolean isGerman = prefs.getBoolean("german", false);
+        String newLanguage = isGerman ? "de" : "en";
+        prefs.putString("language", newLanguage).flush();
+
+        return isGerman ? Locale.GERMAN : Locale.ENGLISH;
+    }
+
     @Override
     public void create() {
         super.create();
@@ -131,7 +158,7 @@ public class Quarry extends GameBase implements PlatformInterface {
         prefs = Gdx.app.getPreferences("TheQuarry");
 
         i18n = new I18NBundleDelegate(I18NBundle.createBundle(Gdx.files.internal("i18n/TheQuarry"),
-                prefs.getBoolean("german", false) ? Locale.GERMAN : Locale.ENGLISH));
+                getLocale()));
 
         // backwards compat
         try {

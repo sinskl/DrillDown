@@ -427,12 +427,30 @@ public class Menu {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Quarry.Q.sound.play(Quarry.Q.clickSfx);
+
+                // Cycle through languages: EN -> DE -> ZH -> EN
+                String currentLang = Quarry.Q.prefs.getString("language", "en");
+                String nextLang;
+                switch (currentLang) {
+                    case "en":
+                        nextLang = "de";
+                        break;
+                    case "de":
+                        nextLang = "zh";
+                        break;
+                    case "zh":
+                    default:
+                        nextLang = "en";
+                        break;
+                }
+
+                Quarry.Q.prefs.putString("language", nextLang).flush();
+
                 Game.G.ui.alert.show(Game.G.ui, Quarry.Q.i18n.get("alert.language_change"), new Callback<Void>() {
                     @Override
                     public void call(Void data) {
                     }
                 });
-                Quarry.Q.prefs.putBoolean("german", !de.isChecked()).flush();
             }
         });
 
