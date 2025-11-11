@@ -41,7 +41,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build Android
-        run: ./gradlew android:assembleFullRelease
+        run: ./gradlew android:assembleRelease
 
       - name: Build Desktop
         run: ./gradlew desktop:dist
@@ -50,7 +50,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
-          path: android/build/outputs/apk/full/fullRelease/*.apk
+          path: android/build/outputs/apk/release/*.apk
 
       - name: Upload Desktop JAR
         uses: actions/upload-artifact@v4
@@ -95,14 +95,14 @@ jobs:
 
       - name: Build
         run: |
-          ./gradlew android:assembleFullRelease
+          ./gradlew android:assembleRelease
           ./gradlew desktop:dist
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            android/build/outputs/apk/full/fullRelease/*.apk
+            android/build/outputs/apk/release/*.apk
             desktop/build/libs/*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
