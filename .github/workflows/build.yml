@@ -1,0 +1,71 @@
+name: Build
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Build Android
+        run: ./gradlew android:assembleFullRelease
+
+      - name: Build Desktop
+        run: ./gradlew desktop:dist
+
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: android/build/outputs/apk/fullRelease/*.apk
+
+      - name: Upload Desktop
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-zip
+          path: desktop/build/distributions/*.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Build
+        run: |
+          ./gradlew android:assembleFullRelease
+          ./gradlew desktop:dist
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            android/build/outputs/apk/fullRelease/*.apk
+            desktop/build/distributions/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
