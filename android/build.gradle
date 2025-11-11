@@ -1,13 +1,29 @@
 android {
+    compileSdkVersion 30
+
     signingConfigs {
         config {
-            keyAlias keypass_alias
-            keyPassword keypass_pwd
-            storeFile file(keypass_file)
-            storePassword keypass_pwd
+            // Use debug keystore by default, or release keystore from env vars
+            if (System.getenv("ANDROID_KEYSTORE_FILE")) {
+                // Use release keystore from GitHub secrets
+                def keystoreFile = file("$System.env.ANDROID_KEYSTORE_FILE")
+                def keystoreData = new File(keystoreFile, "drilldown-release.keystore").bytes
+                def tmpFile = new File("$buildDir/drilldown-release.keystore")
+                tmpFile.write keystoreData
+
+                keyAlias System.getenv("ANDROID_KEY_ALIAS")
+                keyPassword System.getenv("ANDROID_KEY_PASSWORD")
+                storeFile file(tmpFile.absolutePath)
+                storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD")
+            } else {
+                // Use standard debug keystore
+                storeFile file(System.getenv("HOME") + "/.android/debug.keystore")
+                storePassword 'android'
+                keyAlias 'androiddebugkey'
+                keyPassword 'android'
+            }
         }
     }
-    compileSdkVersion 30
 
     flavorDimensions "version"
 
