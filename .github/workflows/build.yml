@@ -46,11 +46,11 @@ jobs:
       - name: Build Desktop
         run: ./gradlew desktop:dist
 
-      - name: Upload Android APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-apk
-          path: android/build/outputs/apk/release/*.apk
+      - name: Show Android build outputs
+        run: find android/build -name "*.apk" -o -type d -name "outputs" | head -20
+
+      - name: Show project structure
+        run: tree android/build -L 4 || find android/build -type f -name "*.apk"
 
       - name: Upload Desktop JAR
         uses: actions/upload-artifact@v4
