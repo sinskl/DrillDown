@@ -46,11 +46,11 @@ jobs:
       - name: Build Desktop
         run: ./gradlew desktop:dist
 
-      - name: Show Android build outputs
-        run: find android/build -name "*.apk" -o -type d -name "outputs" | head -20
-
-      - name: Show project structure
-        run: tree android/build -L 4 || find android/build -type f -name "*.apk"
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: android/build/outputs/apk/full/release/*.apk
 
       - name: Upload Desktop JAR
         uses: actions/upload-artifact@v4
@@ -98,17 +98,11 @@ jobs:
           ./gradlew android:assembleRelease
           ./gradlew desktop:dist
 
-      - name: Show Android build outputs
-        run: find android/build -name "*.apk" -o -type d -name "outputs" | head -20
-
-      - name: Show project structure
-        run: tree android/build -L 4 || find android/build -type f -name "*.apk"
-
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            android/build/outputs/apk/release/*.apk
+            android/build/outputs/apk/full/release/*.apk
             desktop/build/libs/*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
