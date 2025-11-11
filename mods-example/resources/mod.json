@@ -1,0 +1,26 @@
+{
+  "id": "example",
+  "name": "Example Mod",
+  "version": "1.0.0",
+  "author": "ModLoader Example",
+  "description": "A simple example mod that demonstrates the ModLoader API",
+  "main": "com.example.mod.ExampleMod",
+  "minGameVersion": "1.0.0",
+  "maxGameVersion": "2.0.0",
+  "dependencies": [
+    "core"
+  ],
+  "clientOnly": false,
+  "serverOnly": false,
+  "loadPriority": 100,
+  "entrypoints": {
+    "client": "com.example.mod.ExampleClientMod",
+    "server": "com.example.mod.ExampleServerMod"
+  },
+  "provides": [
+    "example-api"
+  ],
+  "optionalDependencies": [
+    "some-optional-mod"
+  ]
+}
