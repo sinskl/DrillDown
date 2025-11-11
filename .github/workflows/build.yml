@@ -40,7 +40,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
-          path: android/build/outputs/apk/fullRelease/*.apk
+          path: android/build/outputs/apk/full/fullRelease/*.apk
 
       - name: Upload Desktop
         uses: actions/upload-artifact@v4
@@ -82,7 +82,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            android/build/outputs/apk/fullRelease/*.apk
+            android/build/outputs/apk/full/fullRelease/*.apk
             desktop/build/distributions/*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
