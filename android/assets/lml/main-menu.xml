@@ -32,7 +32,7 @@
 		<table row="true" background="button-black">
 			<volumebutton id="sfx" height="50" style="sound" expand="true"
 				padLeft="100" />
-			<imagebutton id="lang" height="50" style="lang" expand="true" />
+			<textbutton id="lang" style="default" expand="true" />
 			<volumebutton id="music" height="50" style="music" expand="true"
 				padRight="100" />
 		</table>

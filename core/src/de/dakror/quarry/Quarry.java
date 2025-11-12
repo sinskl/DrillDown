@@ -130,8 +130,26 @@ public class Quarry extends GameBase implements PlatformInterface {
 
         prefs = Gdx.app.getPreferences("TheQuarry");
 
-        i18n = new I18NBundleDelegate(I18NBundle.createBundle(Gdx.files.internal("i18n/TheQuarry"),
-                prefs.getBoolean("german", false) ? Locale.GERMAN : Locale.ENGLISH));
+        if (!prefs.contains("language")) {
+            prefs.putString("language", prefs.getBoolean("german", false) ? "de" : "en");
+            prefs.flush();
+        }
+
+        String lang = prefs.getString("language", "en");
+        Locale locale;
+        switch (lang) {
+            case "de":
+                locale = Locale.GERMAN;
+                break;
+            case "zh":
+                locale = Locale.CHINESE;
+                break;
+            default:
+                locale = Locale.ENGLISH;
+                break;
+        }
+
+        i18n = new I18NBundleDelegate(I18NBundle.createBundle(Gdx.files.internal("i18n/TheQuarry"), locale));
 
         // backwards compat
         try {

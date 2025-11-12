@@ -179,6 +179,16 @@ public class LoadingScreen extends Scene {
             param.size = (int) (dp * (float) Quarry.Q.pi.message(Const.MSG_DPI, null));
         }
 
+        if (Quarry.Q.prefs.getString("language", "en").equals("zh")) {
+            String p = Gdx.files.internal("i18n/TheQuarry_zh.properties").readString("UTF-8");
+            String chars = "";
+            for (String s : p.split("\n")) {
+                if (s.contains("="))
+                    chars += s.substring(s.indexOf("=") + 1);
+            }
+            param.characters = FreeTypeFontGenerator.DEFAULT_CHARS + chars;
+        }
+
         BitmapFont font = gen.generateFont(param);
         font.getData().markupEnabled = true;
         return font;
