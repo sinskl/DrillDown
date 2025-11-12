@@ -4126,6 +4126,14 @@ public class Game extends GameScene {
         gameSpeed = Math.min(gameSpeed * 2, 100);
     }
 
+    public void cycleSpeed() {
+        if (gameSpeed >= 8) {
+            gameSpeed = 1;
+        } else {
+            gameSpeed *= 2;
+        }
+    }
+
     public int getItemCount() {
         int sum = 0;
         synchronized (layerLock) {

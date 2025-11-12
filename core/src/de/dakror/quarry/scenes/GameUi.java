@@ -58,6 +58,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane.ScrollPaneStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
@@ -246,6 +247,7 @@ public class GameUi implements Ui {
     public ImageButton destroyButton;
     ImageButton cableRemoveButton;
     public ImageButton pauseButton;
+    TextButton speedButton;
     ImageButton copyButton;
 
     // Resources
@@ -629,6 +631,19 @@ public class GameUi implements Ui {
         pauseButton.setPosition(24 + Const.BUILD_RING_ITEM_SIZE, Const.UI_H - (Const.BUILD_RING_ITEM_SIZE + 12));
         pauseButton.setName("pauseButton");
         stage.addActor(pauseButton);
+
+        speedButton = new TextButton("x1", skin);
+        speedButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Quarry.Q.sound.play(Quarry.Q.clickSfx);
+                Game.G.cycleSpeed();
+            }
+        });
+        speedButton.setSize(80, 80);
+        speedButton.setPosition(24 + Const.BUILD_RING_ITEM_SIZE * 2 + 12, Const.UI_H - (Const.BUILD_RING_ITEM_SIZE + 12));
+        speedButton.setName("speedButton");
+        stage.addActor(speedButton);
     }
 
     public void rotateActiveStructure() {
@@ -2261,6 +2276,11 @@ public class GameUi implements Ui {
         } catch (Exception e) {
             Quarry.Q.pi.message(PlatformInterface.MSG_EXCEPTION, e);
         }
+
+        if (speedButton != null) {
+            speedButton.setText("x" + Game.G.gameSpeed);
+        }
+
         tutorial.update();
 
         updateResources(false);

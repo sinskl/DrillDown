@@ -72,6 +72,6 @@ public class CharcoalMound extends ProducerStructure {
     }
 
     public CharcoalMound(int x, int y) {
-        super(x, y, classSchema);
+        super(x, y, classSchemaV103);
     }
 }
