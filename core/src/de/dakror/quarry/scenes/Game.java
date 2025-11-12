@@ -1670,6 +1670,10 @@ public class Game extends GameScene {
     int hoverTileX, hoverTileY;
 
     private int gameSpeed = 1;
+
+    public int getGameSpeed() {
+        return gameSpeed;
+    }
     private boolean gamePaused = false;
 
     private boolean startNewGame;

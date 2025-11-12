@@ -2278,7 +2278,7 @@ public class GameUi implements Ui {
         }
 
         if (speedButton != null) {
-            speedButton.setText("x" + Game.G.gameSpeed);
+            speedButton.setText("x" + Game.G.getGameSpeed());
         }
 
         tutorial.update();
