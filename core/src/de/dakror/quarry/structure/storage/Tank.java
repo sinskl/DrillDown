@@ -54,7 +54,7 @@ public class Tank extends Structure<Schema> {
             2,
             "tank",
             new Items(ItemType.Scaffolding, 5, ItemType.CopperPlate, 40, ItemType.CopperTube, 2), null, new Dock(0, 0, Direction.West, DockType.FluidIn), new Dock(3, 0, Direction.East, DockType.FluidOut))
-                    .components(new CTank(20000, 1, false).setPumpOutDelay(0).setMaxOutput(200))
+                    .components(new CTank(20000, 1, false).setPumpOutDelay(0).setMaxOutput(500))
                     .flags(Flags.ConfirmDestruction)
                     .button(new ButtonDef("icon_pump_out", "button.pump", ButtonType.StateToggle, new BiCallback<Boolean, Structure<?>>() {
                         @Override

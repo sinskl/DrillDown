@@ -39,7 +39,7 @@ public class Silo extends Tank {
             7,
             "silo",
             new Items(ItemType.SteelPlate, 250, ItemType.SteelIngot, 10, ItemType.SteelTube, 8), null, new Dock(0, 0, Direction.West, DockType.FluidIn), new Dock(1, 0, Direction.East, DockType.FluidOut))
-                    .components(new CTank(8000000, 1, false).setPumpOutDelay(0).setMaxOutput(4000))
+                    .components(new CTank(8000000, 1, false).setPumpOutDelay(0).setMaxOutput(10000))
                     .flags(Flags.ConfirmDestruction)
                     .button(new ButtonDef("icon_pump_out", "button.pump", ButtonType.StateToggle, new BiCallback<Boolean, Structure<?>>() {
                         @Override
