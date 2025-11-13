@@ -131,8 +131,8 @@
 		"default": {
 			"font": "default-font",
 			"fontColor": "white",
-			"up": "panel_metal",
-			"down": "panel_metalDark"
+			"up": "button",
+			"down": "button-black"
 		},
 		"menu_item": {
 			"font": "default-font",
@@ -207,9 +207,11 @@
 			"pressedOffsetY": -2
 		},
 		"speedup": {
-			"pressedOffsetX": 2,
-			"pressedOffsetY": -2,
-			"imageUp": "symb_ff"
+			"pressedOffsetX": 1,
+			"pressedOffsetY": -1,
+			"imageUp": "symb_ff",
+			"up": "round_metal",
+			"down": "round_metalDark"
 		},
 		"music": {
 			"pressedOffsetX": 2,

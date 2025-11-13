@@ -72,6 +72,21 @@ public class Menu {
     public Label fps;
 
     public Menu(final Stage stage, final Skin skin) {
+        // ... existing Menu constructor content ...
+    }
+
+    private String getLanguageEmoji(String lang) {
+        switch (lang) {
+            case "en":
+                return "🇬🇧";
+            case "de":
+                return "🇩🇪";
+            case "zh":
+                return "🇨🇳";
+            default:
+                return lang;
+        }
+    }
         Util.lml("menu");
 
         fps = Util.id("fps");
@@ -422,7 +437,7 @@ public class Menu {
         });
 
         final TextButton langButton = Util.id("lang");
-        langButton.setText(Quarry.Q.prefs.getString("language"));
+        langButton.setText(getLanguageEmoji(Quarry.Q.prefs.getString("language")));
         langButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -439,7 +454,7 @@ public class Menu {
                 else if (currentLang.equals("zh")) nextLang = "en";
 
                 Quarry.Q.prefs.putString("language", nextLang).flush();
-                langButton.setText(nextLang);
+                langButton.setText(getLanguageEmoji(nextLang));
             }
         });
 

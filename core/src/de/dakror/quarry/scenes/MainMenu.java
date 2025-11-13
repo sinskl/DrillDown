@@ -162,6 +162,21 @@ public class MainMenu extends Scene implements Ui {
     }
 
     protected void initUI() {
+        // ... existing initUI content ...
+    }
+
+    private String getLanguageEmoji(String lang) {
+        switch (lang) {
+            case "en":
+                return "🇬🇧";
+            case "de":
+                return "🇩🇪";
+            case "zh":
+                return "🇨🇳";
+            default:
+                return lang;
+        }
+    }
         stage.getActors().clear();
 
         Table t = Util.lml("main-menu");
@@ -176,7 +191,7 @@ public class MainMenu extends Scene implements Ui {
         stage.addActor(toast);
 
         final TextButton langButton = Util.id("lang");
-        langButton.setText(Quarry.Q.prefs.getString("language"));
+        langButton.setText(getLanguageEmoji(Quarry.Q.prefs.getString("language")));
         langButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -193,7 +208,7 @@ public class MainMenu extends Scene implements Ui {
                 else if (currentLang.equals("zh")) nextLang = "en";
 
                 Quarry.Q.prefs.putString("language", nextLang).flush();
-                langButton.setText(nextLang);
+                langButton.setText(getLanguageEmoji(nextLang));
             }
         });
 
