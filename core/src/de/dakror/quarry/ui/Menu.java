@@ -72,8 +72,6 @@ public class Menu {
     public Label fps;
 
     public Menu(final Stage stage, final Skin skin) {
-        // ... existing Menu constructor content ...
-    }
         Util.lml("menu");
 
         fps = Util.id("fps");

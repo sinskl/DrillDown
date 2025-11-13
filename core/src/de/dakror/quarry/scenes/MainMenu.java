@@ -163,7 +163,6 @@ public class MainMenu extends Scene implements Ui {
 
     protected void initUI() {
         // ... existing initUI content ...
-    }
         stage.getActors().clear();
 
         Table t = Util.lml("main-menu");
