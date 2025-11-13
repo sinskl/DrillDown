@@ -66,7 +66,7 @@ public class Const {
     public static final int MIN_AUTOSAVE_INTERVAL = 3 * 60 * 1000; // 3 minutes
 
     // BALANCING //
-    public static final float ITEM_SPEED = 5.0f;
+    public static final float ITEM_SPEED = 5000.0f;
     public static final int ITEMS_PER_CONVEYOR = 7;
     public static final float REFUND_PERCENTAGE = 0.25f;
     public static final float REFUND_CONSIDERATE_PERCENTAGE = 0.8f;

@@ -64,7 +64,7 @@ public class ElectricConveyorCore extends Conveyor {
     public static final float POWER_CAPACITY = 1000;
     public static final float POWER_USE = 5;
     public static final double POWER_USE_GROW = 1.275f;
-    public static final int SPEED_BOOST = 5;
+    public static final int SPEED_BOOST = 1000;
 
     Table ui;
     Container<Table> container;
