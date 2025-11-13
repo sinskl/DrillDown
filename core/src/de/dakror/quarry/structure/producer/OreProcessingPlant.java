@@ -27,6 +27,7 @@ import de.dakror.quarry.structure.base.Dock.DockFilter;
 import de.dakror.quarry.structure.base.Dock.DockType;
 import de.dakror.quarry.structure.base.ProducerStructure;
 import de.dakror.quarry.structure.base.RecipeList;
+import de.dakror.quarry.structure.base.RecipeList.ParameterizedAmount;
 import de.dakror.quarry.structure.base.Schema.Flags;
 import de.dakror.quarry.structure.base.StructureType;
 import de.dakror.quarry.util.Sfx;
