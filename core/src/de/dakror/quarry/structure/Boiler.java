@@ -72,7 +72,7 @@ public class Boiler extends PausableStructure<PausableSchema> {
             new Sfx("boiler" + Const.SFX_FORMAT),
             new Dock(2, 2, Direction.North, DockType.FluidOut),
             new Dock(0, 0, Direction.West, DockType.FluidIn, new DockFilter(ItemType.Water)), new Dock(4, 0, Direction.East, DockType.ItemIn, new DockFilter(ItemType.Charcoal, ItemType.CoalOre)))
-                    .components(new CTank(10000), new CTank(10000, 0).setPumpOutDelay(0))
+                    .components(new CTank(10000), new CTank(10000, 0).setPumpOutDelay(0).setMaxOutput(500))
                     .sciences(ScienceType.WaterUsage);
 
     public static final BoilerRecipe recipe = new BoilerRecipe();

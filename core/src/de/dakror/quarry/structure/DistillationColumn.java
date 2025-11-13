@@ -68,7 +68,7 @@ public class DistillationColumn extends PausableStructure<PausableSchema> {
             new Dock(0, 4, Direction.North, DockType.StackOut),
             new Dock(1, 4, Direction.North, DockType.StackOut), new Dock(2, 4, Direction.North, DockType.StackOut))
                     .sciences(ScienceType.OilProcessing)
-                    .components(new CTank(2000), new CTank(2000, 0))
+                    .components(new CTank(2000), new CTank(2000, 0).setPumpOutDelay(0).setMaxOutput(500))
                     .flags(Flags.Stackable, Flags.MirroredTextureHorizontal);
 
     public static class DistillationRecipe {

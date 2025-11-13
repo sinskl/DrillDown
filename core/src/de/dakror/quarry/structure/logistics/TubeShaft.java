@@ -39,7 +39,7 @@ public class TubeShaft extends Structure<Schema> {
             new Items(ItemType.SteelIngot, 10, ItemType.SteelTube, 8),
             null,
             new Dock(0, 0, Direction.West, DockType.FluidOut), new Dock(0, 0, Direction.East, DockType.FluidIn))
-                    .components(new CTank(20_000, 0).setPumpOutDelay(0).setMaxOutput(1000))
+                    .components(new CTank(20_000, 0).setPumpOutDelay(0).setMaxOutput(10000))
                     .sciences(ScienceType.MineExpansion, ScienceType.Routers, ScienceType.WaterUsage);
 
     TubeShaft other;

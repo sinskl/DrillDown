@@ -79,7 +79,7 @@ public class Storage extends StorageStructure {
             2,
             "storage",
             new Items(ItemType.Stone, 16, ItemType.StoneBrick, 2, ItemType.Scaffolding, 8), null, new Dock(0, 0, Direction.South, DockType.ItemIn), new Dock(2, 0, Direction.South, DockType.ItemOut))
-                    .components(new CInventory(200))
+                    .components(new CInventory(200).setPumpOutSpeed(Const.DEFAULT_PUMP_OUT_DELAY / 20f))
                     .flags(Flags.ConfirmDestruction)
                     .button(new ButtonDef("icon_pump_out", "button.pump", ButtonType.TempRadio, new BiCallback<Boolean, Structure<?>>() {
                         @Override

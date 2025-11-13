@@ -79,7 +79,7 @@ public class ScienceLab extends Structure<Schema> {
                             }
                         }
                     }))
-                    .components(new CInventory(Science.getMaxBuyCosts()))
+                    .components(new CInventory(Science.getMaxBuyCosts()).setPumpOutSpeed(Const.DEFAULT_PUMP_OUT_DELAY / 20f))
                     .flags(Flags.TextureAlwaysUpright);
 
     ScienceType activeScience;

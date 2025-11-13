@@ -30,7 +30,7 @@ public class TubeShaftBelow extends TubeShaft {
     public static final Schema classSchema = new Schema(0, StructureType.TubeShaftBelow, true, 1, 1,
             "tubeshaftout",
             TubeShaft.classSchema.buildCosts /*same costs to get the stuff when destroying*/, null, new Dock(0, 0, Direction.East, DockType.FluidOut), new Dock(0, 0, Direction.West, DockType.FluidIn))
-                    .components(new CTank(20_000, 0).setPumpOutDelay(0).setMaxOutput(1000));
+                    .components(new CTank(20_000, 0).setPumpOutDelay(0).setMaxOutput(10000));
 
     public TubeShaftBelow(int x, int y) {
         super(x, y, classSchema, -1);
