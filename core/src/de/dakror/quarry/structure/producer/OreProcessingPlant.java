@@ -73,7 +73,7 @@ public class OreProcessingPlant extends ProducerStructure {
             true,
             new Dock(1, 0, Direction.South, DockType.ItemOut),
             new Dock(0, 1, Direction.North, DockType.ItemIn, new DockFilter(
-                    ItemType._Ore, ItemType.Stone, ItemType.Wood, ItemType._Gravel, ItemType.CoalOre, ItemType.Sand, ItemType.StoneGravel).exclude(ItemType.CoalOre)))
+                    ItemType._Ore, ItemType.Stone, ItemType.Wood, ItemType._Gravel, ItemType.CoalOre, ItemType.Sand, ItemType.StoneGravel)))
                     .sciences(ScienceType.OreProcessing)
                     .flags(Flags.TextureAlwaysUpright);
 
