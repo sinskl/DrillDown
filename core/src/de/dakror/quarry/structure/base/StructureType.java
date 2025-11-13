@@ -204,7 +204,7 @@ public enum StructureType {
     HighPowerShaftBelow(208, HighPowerShaftBelow.class),
 
     // Processors cnt.
-    Stacker(210, Stacker.class),
+    Stacker(211, Stacker.class),
 
     ;
 
