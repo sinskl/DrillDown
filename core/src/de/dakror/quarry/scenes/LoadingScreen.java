@@ -75,7 +75,7 @@ public class LoadingScreen extends Scene {
 
         assets.load("tex.atlas", TextureAtlas.class);
 
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Roboto-Medium.ttf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("NotoSans-Regular.ttf"));
         ObjectMap<String, Object> fontMap = new ObjectMap<String, Object>();
         fontMap.put("small-font", createFont(generator, 24));
         fontMap.put("default-font", createFont(generator, 32));
