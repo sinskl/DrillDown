@@ -74,19 +74,6 @@ public class Menu {
     public Menu(final Stage stage, final Skin skin) {
         // ... existing Menu constructor content ...
     }
-
-    private String getLanguageEmoji(String lang) {
-        switch (lang) {
-            case "en":
-                return "🇬🇧";
-            case "de":
-                return "🇩🇪";
-            case "zh":
-                return "🇨🇳";
-            default:
-                return lang;
-        }
-    }
         Util.lml("menu");
 
         fps = Util.id("fps");
@@ -588,5 +575,18 @@ public class Menu {
                 return true;
             }
         });
+    }
+
+    private String getLanguageEmoji(String lang) {
+        switch (lang) {
+            case "en":
+                return "🇬🇧";
+            case "de":
+                return "🇩🇪";
+            case "zh":
+                return "🇨🇳";
+            default:
+                return lang;
+        }
     }
 }

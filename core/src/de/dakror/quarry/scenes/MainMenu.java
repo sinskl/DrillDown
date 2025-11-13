@@ -164,19 +164,6 @@ public class MainMenu extends Scene implements Ui {
     protected void initUI() {
         // ... existing initUI content ...
     }
-
-    private String getLanguageEmoji(String lang) {
-        switch (lang) {
-            case "en":
-                return "🇬🇧";
-            case "de":
-                return "🇩🇪";
-            case "zh":
-                return "🇨🇳";
-            default:
-                return lang;
-        }
-    }
         stage.getActors().clear();
 
         Table t = Util.lml("main-menu");
@@ -574,5 +561,18 @@ public class MainMenu extends Scene implements Ui {
     @Override
     public Stage getStage() {
         return stage;
+    }
+
+    private String getLanguageEmoji(String lang) {
+        switch (lang) {
+            case "en":
+                return "🇬🇧";
+            case "de":
+                return "🇩🇪";
+            case "zh":
+                return "🇨🇳";
+            default:
+                return lang;
+        }
     }
 }
