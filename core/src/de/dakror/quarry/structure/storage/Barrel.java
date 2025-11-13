@@ -58,7 +58,7 @@ public class Barrel extends StorageStructure {
             new Items(ItemType.Scaffolding, 5, ItemType.WoodPlank, 24),
             null,
             new Dock(0, 0, Direction.South, DockType.ItemOut), new Dock(0, 0, Direction.North, DockType.ItemIn))
-                    .components(new CSingleInventory(350, 0, false))
+                    .components(new CSingleInventory(350, 0, false).setPumpOutDelay(0))
                     .flags(Flags.ConfirmDestruction)
                     .sciences(ScienceType.BetterStorage)
                     .button(new ButtonDef("icon_pump_out", "button.pump", ButtonType.StateToggle, new BiCallback<Boolean, Structure<?>>() {

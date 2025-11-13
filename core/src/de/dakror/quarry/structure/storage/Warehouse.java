@@ -50,7 +50,7 @@ public class Warehouse extends Storage {
             new Items(ItemType.StoneBrick, 50, ItemType.WoodPlank, 100, ItemType.Scaffolding, 50),
             null,
             new Dock(0, 0, Direction.South, DockType.ItemIn), new Dock(9, 0, Direction.South, DockType.ItemOut))
-                    .components(new CInventory(5000).setPumpOutSpeed(Const.DEFAULT_PUMP_OUT_DELAY / 2f))
+                    .components(new CInventory(5000).setPumpOutSpeed(Const.DEFAULT_PUMP_OUT_DELAY / 8f))
                     .flags(Flags.ConfirmDestruction, Flags.MirroredTextureHorizontal, Flags.MirroredTextureVertical)
                     // @Refactor copy paste from parent (Storage) maybe abstract away duplicate code
                     .button(new ButtonDef("icon_pump_out", "button.pump", ButtonType.TempRadio, new BiCallback<Boolean, Structure<?>>() {

@@ -422,7 +422,7 @@ public class Menu {
         });
 
         final TextButton langButton = Util.id("lang");
-        langButton.setText(getLanguageEmoji(Quarry.Q.prefs.getString("language")));
+        langButton.setText(Quarry.Q.prefs.getString("language"));
         langButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -439,7 +439,7 @@ public class Menu {
                 else if (currentLang.equals("zh")) nextLang = "en";
 
                 Quarry.Q.prefs.putString("language", nextLang).flush();
-                langButton.setText(getLanguageEmoji(nextLang));
+                langButton.setText(nextLang);
             }
         });
 
@@ -575,16 +575,4 @@ public class Menu {
         });
     }
 
-    private String getLanguageEmoji(String lang) {
-        switch (lang) {
-            case "en":
-                return "🇬🇧";
-            case "de":
-                return "🇩🇪";
-            case "zh":
-                return "🇨🇳";
-            default:
-                return lang;
-        }
-    }
 }

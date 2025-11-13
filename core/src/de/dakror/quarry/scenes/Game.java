@@ -4127,10 +4127,12 @@ public class Game extends GameScene {
     }
 
     public void increaseSpeed() {
-        		gameSpeed = Math.min(gameSpeed * 2, 64);    }
+        gameSpeed = Math.min(gameSpeed * 2, 100);
+    }
 
     public void cycleSpeed() {
-        		if (gameSpeed >= 64) {            gameSpeed = 1;
+        if (gameSpeed >= 8) {
+            gameSpeed = 1;
         } else {
             gameSpeed *= 2;
         }
