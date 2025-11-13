@@ -50,6 +50,7 @@ import net.spookygames.gdx.sfx.SfxSoundLoader;
  * @author Maximilian Stark | Dakror
  */
 public class LoadingScreen extends Scene {
+    private static final ObjectMap<String, BitmapFont> fontCache = new ObjectMap<>();
     long l;
 
     Label label;
@@ -170,6 +171,11 @@ public class LoadingScreen extends Scene {
     }
 
     protected BitmapFont createFont(FreeTypeFontGenerator gen, float dp) {
+        String key = "font_" + dp;
+        if (fontCache.containsKey(key)) {
+            return fontCache.get(key);
+        }
+
         FreeTypeFontParameter param = new FreeTypeFontParameter();
         param.magFilter = TextureFilter.Linear;
         param.minFilter = TextureFilter.Linear;
@@ -191,6 +197,7 @@ public class LoadingScreen extends Scene {
 
         BitmapFont font = gen.generateFont(param);
         font.getData().markupEnabled = true;
+        fontCache.put(key, font);
         return font;
     }
 
