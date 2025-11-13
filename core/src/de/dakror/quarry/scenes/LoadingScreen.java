@@ -171,7 +171,8 @@ public class LoadingScreen extends Scene {
     }
 
     protected BitmapFont createFont(FreeTypeFontGenerator gen, float dp) {
-        String key = "font_" + dp;
+        String language = Quarry.Q.prefs.getString("language", "en");
+        String key = "font_" + dp + "_" + language;
         if (fontCache.containsKey(key)) {
             return fontCache.get(key);
         }
@@ -185,7 +186,7 @@ public class LoadingScreen extends Scene {
             param.size = (int) (dp * (float) Quarry.Q.pi.message(Const.MSG_DPI, null));
         }
 
-        if (Quarry.Q.prefs.getString("language", "en").equals("zh")) {
+        if (language.equals("zh")) {
             String p = Gdx.files.internal("i18n/TheQuarry_zh.properties").readString("UTF-8");
             String chars = "";
             for (String s : p.split("\n")) {
