@@ -72,7 +72,7 @@ public class AndroidLauncher extends AndroidApplication implements PlatformInter
     private List<String> earlyLogs = new ArrayList<>();
     private boolean gdxInitialized = false;
     
-    private void log(String tag, String message) {
+    private void debugLog(String tag, String message) {
         if (gdxInitialized && Gdx.app != null) {
             Gdx.app.log(tag, message);
         } else {
@@ -80,7 +80,7 @@ public class AndroidLauncher extends AndroidApplication implements PlatformInter
         }
     }
     
-    private void log(String tag, String message, Exception e) {
+    private void debugLog(String tag, String message, Exception e) {
         if (gdxInitialized && Gdx.app != null) {
             Gdx.app.error(tag, message, e);
         } else {
@@ -303,19 +303,19 @@ public class AndroidLauncher extends AndroidApplication implements PlatformInter
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        log("AndroidLauncher", "=== onCreate called === SDK_INT=" + Build.VERSION.SDK_INT);
+        debugLog("AndroidLauncher", "=== onCreate called === SDK_INT=" + Build.VERSION.SDK_INT);
         
         AndroidAudioDurationResolver.initialize();
-        log("AndroidLauncher", "AudioDurationResolver initialized");
+        debugLog("AndroidLauncher", "AudioDurationResolver initialized");
 
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        log("AndroidLauncher", "Window flags set - keep screen on, indeterminate progress");
+        debugLog("AndroidLauncher", "Window flags set - keep screen on, indeterminate progress");
 
         safeInsets = new int[4];
 
         mHandler = new Handler();
-        log("AndroidLauncher", "UI Handler created");
+        debugLog("AndroidLauncher", "UI Handler created");
 
         SharedPreferences prefs = getSharedPreferences("TheQuarry-Android", MODE_PRIVATE);
         DocumentFile dir = null;
@@ -330,7 +330,7 @@ public class AndroidLauncher extends AndroidApplication implements PlatformInter
             }
 
             if (str == null) {
-                log("AndroidLauncher", "No external directory selected or not accessible, showing directory picker dialog");
+                debugLog("AndroidLauncher", "No external directory selected or not accessible, showing directory picker dialog");
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder
                         .setView(getLayoutInflater().inflate(R.layout.external_file_layout, null))
@@ -341,11 +341,11 @@ public class AndroidLauncher extends AndroidApplication implements PlatformInter
                                 intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI,
                                         Environment.getExternalStorageDirectory());
                                 try {
-                                    log("AndroidLauncher", "Starting directory picker for document tree");
+                                    debugLog("AndroidLauncher", "Starting directory picker for document tree");
                                     startActivityForResult(intent, TREE_REQUEST_CODE);
                                 } catch (Exception e) {
                                     if (Gdx.app != null) {
-                                        log("AndroidLauncher", "Failed to start file chooser", e);
+                                        debugLog("AndroidLauncher", "Failed to start file chooser", e);
                                     }
                                     Toast.makeText(getApplicationContext(), R.string.no_filechooser_found,
                                             Toast.LENGTH_LONG).show();
@@ -359,7 +359,7 @@ public class AndroidLauncher extends AndroidApplication implements PlatformInter
                         .show();
             } else {
                 if (Gdx.app != null) {
-                    log("AndroidLauncher", "Using external directory: " + str);
+                    debugLog("AndroidLauncher", "Using external directory: " + str);
                 }
             }
         }
@@ -371,7 +371,7 @@ public class AndroidLauncher extends AndroidApplication implements PlatformInter
                 false, Build.VERSION.SDK_INT >= Build.VERSION_CODES.R, null);
         initialize(game, config);
         
-        log("AndroidLauncher", "Gdx initialized, using Gdx.app.log for persistent logging");
+        debugLog("AndroidLauncher", "Gdx initialized, using Gdx.app.log for persistent logging");
         if (Gdx.app != null) {
             Gdx.app.log("AndroidLauncher", "=== AndroidLauncher initialization complete ===");
             Gdx.app.log("AndroidLauncher", "SDK_INT=" + Build.VERSION.SDK_INT + ", VERSION_NAME=" + BuildConfig.VERSION_NAME);
@@ -389,20 +389,20 @@ public class AndroidLauncher extends AndroidApplication implements PlatformInter
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        log("AndroidLauncher", "onRequestPermissionsResult - requestCode=" + requestCode);
+        debugLog("AndroidLauncher", "onRequestPermissionsResult - requestCode=" + requestCode);
         if (requestCode == WRITE_REQUEST_CODE) {
             boolean granted = grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
-            log("AndroidLauncher", "WRITE_EXTERNAL_STORAGE permission granted: " + granted);
+            debugLog("AndroidLauncher", "WRITE_EXTERNAL_STORAGE permission granted: " + granted);
             game.message(Const.MSG_FILE_PERMISSION, granted);
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        log("AndroidLauncher", "onActivityResult called - requestCode=" + requestCode + ", resultCode=" + resultCode);
+        debugLog("AndroidLauncher", "onActivityResult called - requestCode=" + requestCode + ", resultCode=" + resultCode);
         if (requestCode == TREE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             if (data != null) {
-                log("AndroidLauncher", "Directory selected successfully");
+                debugLog("AndroidLauncher", "Directory selected successfully");
                 Uri uri = data.getData();
                 SharedPreferences prefs = getSharedPreferences("TheQuarry-Android", MODE_PRIVATE);
                 prefs.edit().putString("EXTERNAL_URI", uri.toString()).commit();
@@ -416,7 +416,7 @@ public class AndroidLauncher extends AndroidApplication implements PlatformInter
     @Override
     public Object message(int messageCode, final Object payload) {
         if (messageCode != -123) {
-            log("AndroidLauncher", "message called - code=" + messageCode + ", payload=" + payload);
+            debugLog("AndroidLauncher", "message called - code=" + messageCode + ", payload=" + payload);
         }
         switch (messageCode) {
             case MSG_EXCEPTION: {
