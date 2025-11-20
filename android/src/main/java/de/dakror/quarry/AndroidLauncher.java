@@ -84,7 +84,7 @@ public class AndroidLauncher extends AndroidApplication implements PlatformInter
         if (gdxInitialized && Gdx.app != null) {
             Gdx.app.error(tag, message, e);
         } else {
-            earlyLogs.add("[" + tag + "] " + message + " - Exception: " + e.getMessage());
+            earlyLogs.add("[" + tag + "] " + message + " - Exception: " + e.getMessage() != null ? e.getMessage() : e.toString());
         }
     }
     
@@ -344,9 +344,7 @@ public class AndroidLauncher extends AndroidApplication implements PlatformInter
                                     debugLog("AndroidLauncher", "Starting directory picker for document tree");
                                     startActivityForResult(intent, TREE_REQUEST_CODE);
                                 } catch (Exception e) {
-                                    if (Gdx.app != null) {
-                                        debugLog("AndroidLauncher", "Failed to start file chooser", e);
-                                    }
+                                    debugLog("AndroidLauncher", "Failed to start file chooser: " + e.getMessage(), e);
                                     Toast.makeText(getApplicationContext(), R.string.no_filechooser_found,
                                             Toast.LENGTH_LONG).show();
                                 }
