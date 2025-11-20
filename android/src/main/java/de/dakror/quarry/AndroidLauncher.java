@@ -292,6 +292,9 @@ public class AndroidLauncher extends AndroidApplication implements PlatformInter
             }
 
             if (str == null) {
+                if (Gdx.app != null) {
+                    Gdx.app.log("AndroidLauncher", "No external directory selected, showing directory picker dialog");
+                }
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder
                         .setView(getLayoutInflater().inflate(R.layout.external_file_layout, null))
@@ -302,8 +305,14 @@ public class AndroidLauncher extends AndroidApplication implements PlatformInter
                                 intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI,
                                         Environment.getExternalStorageDirectory());
                                 try {
+                                    if (Gdx.app != null) {
+                                        Gdx.app.log("AndroidLauncher", "Starting directory picker for document tree");
+                                    }
                                     startActivityForResult(intent, TREE_REQUEST_CODE);
                                 } catch (Exception e) {
+                                    if (Gdx.app != null) {
+                                        Gdx.app.error("AndroidLauncher", "Failed to start file chooser", e);
+                                    }
                                     Toast.makeText(getApplicationContext(), R.string.no_filechooser_found,
                                             Toast.LENGTH_LONG).show();
                                 }
@@ -314,6 +323,10 @@ public class AndroidLauncher extends AndroidApplication implements PlatformInter
                         .setCancelable(false)
                         .create()
                         .show();
+            } else {
+                if (Gdx.app != null) {
+                    Gdx.app.log("AndroidLauncher", "Using external directory: " + str);
+                }
             }
         }
 

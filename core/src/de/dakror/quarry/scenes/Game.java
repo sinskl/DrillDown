@@ -101,6 +101,7 @@ import de.dakror.common.libgdx.ui.GameScene;
 import de.dakror.quarry.Const;
 import de.dakror.quarry.Quarry;
 import de.dakror.quarry.game.Chunk;
+import de.dakror.quarry.util.Logger;
 import de.dakror.quarry.game.Generator;
 import de.dakror.quarry.game.Item;
 import de.dakror.quarry.game.Item.ItemCategory;
@@ -3535,14 +3536,19 @@ public class Game extends GameScene {
 
     public CompoundTag loadSaveData(String filename) throws IOException {
         if (!Quarry.Q.file("TheQuarry/saves/" + filename + ".qsf", false).exists()) {
-            throw new FileNotFoundException();
+            Logger.error("Game", "Save file not found: " + filename + ".qsf");
+            throw new FileNotFoundException("Save file not found: " + filename + ".qsf");
         }
 
         long t = System.currentTimeMillis();
+        Logger.info("Game", "Loading NBT data for: " + filename + ".qsf");
+
         CompoundTag data = NBT.read(
                 new BufferedInputStream(Quarry.Q.file("TheQuarry/saves/" + filename + ".qsf", false).read()),
                 CompressionType.Fast);
-        System.out.println("NBT loading took " + (System.currentTimeMillis() - t));
+
+        long loadTime = System.currentTimeMillis() - t;
+        Logger.info("Game", "NBT loading took " + loadTime + "ms for " + filename);
         return data;
     }
 
@@ -3550,16 +3556,19 @@ public class Game extends GameScene {
         try {
             reset();
 
-            System.out.println("Loading " + filename);
+            Logger.info("Game", "=== Starting load of save: " + filename + " ===");
 
             final CompoundTag meta = loadMetaData(filename);
             if (meta == null) {
+                Logger.error("Game", "Failed to load metadata for: " + filename);
                 callback.call(false);
                 return;
             }
 
             final int build = meta.Int("build", 0);
             boolean full = meta.Byte("full", (byte) 0) == 1;
+
+            Logger.info("Game", "Save metadata loaded - Build: " + build + ", Full version: " + full);
             if (build > Quarry.Q.versionNumber && Quarry.Q.isVersion()) {
                 if (Quarry.Q.getScene() == this) {
                     ui.alert.show(ui, Quarry.Q.i18n.get("alert.newer_version"), new Callback<Void>() {
@@ -3626,20 +3635,27 @@ public class Game extends GameScene {
                 loadData(meta, filename, callback, build);
             }
         } catch (Exception e) {
+            Logger.error("Game", "Failed to load save: " + filename, e);
             callback.call(e);
         }
     }
 
     protected void loadData(CompoundTag meta, String filename, Callback<Object> callback, int build) {
         try {
+            Logger.info("Game", "Loading save data for: " + filename);
+
             CompoundTag data = loadSaveData(filename);
             if (data == null) {
+                Logger.error("Game", "Failed to load save data: " + filename);
                 callback.call(false);
                 return;
             }
 
             long t0 = System.currentTimeMillis();
+            Logger.info("Game", "Starting data processing for save: " + filename);
+
             if (build < Quarry.Q.versionNumber) {
+                Logger.info("Game", "Upgrading save from build " + build + " to " + Quarry.Q.versionNumber);
                 LoadingCompat.instance.upgrade(data, build);
             }
 
@@ -3717,7 +3733,9 @@ public class Game extends GameScene {
                 l.dirtyBounds.set(0, 0, l.width, l.height, Integer.MAX_VALUE);
             }
 
-            System.out.println("Game loading took " + (System.currentTimeMillis() - t0));
+            long loadDuration = System.currentTimeMillis() - t0;
+            Logger.info("Game", "Game loading took " + loadDuration + "ms for " + filename);
+            Logger.info("Game", "=== Successfully loaded save: " + filename + " ===");
 
             Gdx.app.postRunnable(new Runnable() {
                 @Override

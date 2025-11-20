@@ -128,6 +128,11 @@ public class Quarry extends GameBase implements PlatformInterface {
 
         Q = this;
 
+        // Initialize file logging for mobile platforms
+        if (!desktop) {
+            de.dakror.quarry.util.Logger.initFileLogging("TheQuarry/logs/game.log");
+        }
+
         prefs = Gdx.app.getPreferences("TheQuarry");
 
         if (!prefs.contains("language")) {
