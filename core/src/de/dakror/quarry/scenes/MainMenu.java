@@ -176,8 +176,8 @@ public class MainMenu extends Scene implements Ui {
         seedPrompt = Util.lml("seed-prompt");
         stage.addActor(toast);
 
-        final TextButton langButton = Util.id("lang");
-        langButton.setText(Quarry.Q.prefs.getString("language"));
+        final ImageButton langButton = Util.id("lang");
+        langButton.setChecked(Quarry.Q.i18n.getLocale().getLanguage().equals("en"));
         langButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -186,15 +186,7 @@ public class MainMenu extends Scene implements Ui {
                     @Override
                     public void call(Void data) {}
                 });
-
-                String currentLang = Quarry.Q.prefs.getString("language");
-                String nextLang = "en";
-                if (currentLang.equals("en")) nextLang = "de";
-                else if (currentLang.equals("de")) nextLang = "zh";
-                else if (currentLang.equals("zh")) nextLang = "en";
-
-                Quarry.Q.prefs.putString("language", nextLang).flush();
-                langButton.setText(nextLang);
+                Quarry.Q.prefs.putBoolean("german", !langButton.isChecked()).flush();
             }
         });
 

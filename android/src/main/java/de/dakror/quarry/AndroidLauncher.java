@@ -269,15 +269,19 @@ public class AndroidLauncher extends AndroidApplication implements PlatformInter
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Gdx.app.log("AndroidLauncher", "=== onCreate called === SDK_INT=" + Build.VERSION.SDK_INT);
+        
         AndroidAudioDurationResolver.initialize();
+        Gdx.app.log("AndroidLauncher", "AudioDurationResolver initialized");
 
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        Gdx.app.log("AndroidLauncher", "Window flags set - keep screen on, indeterminate progress");
 
         safeInsets = new int[4];
 
         mHandler = new Handler();
+        Gdx.app.log("AndroidLauncher", "UI Handler created");
 
         SharedPreferences prefs = getSharedPreferences("TheQuarry-Android", MODE_PRIVATE);
         DocumentFile dir = null;
@@ -295,6 +299,7 @@ public class AndroidLauncher extends AndroidApplication implements PlatformInter
                 if (Gdx.app != null) {
                     Gdx.app.log("AndroidLauncher", "No external directory selected, showing directory picker dialog");
                 }
+                Gdx.app.log("AndroidLauncher", "External URI is null, need to request document tree");
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder
                         .setView(getLayoutInflater().inflate(R.layout.external_file_layout, null))
@@ -309,6 +314,7 @@ public class AndroidLauncher extends AndroidApplication implements PlatformInter
                                         Gdx.app.log("AndroidLauncher", "Starting directory picker for document tree");
                                     }
                                     startActivityForResult(intent, TREE_REQUEST_CODE);
+                                    Gdx.app.log("AndroidLauncher", "Directory picker started");
                                 } catch (Exception e) {
                                     if (Gdx.app != null) {
                                         Gdx.app.error("AndroidLauncher", "Failed to start file chooser", e);
@@ -349,16 +355,20 @@ public class AndroidLauncher extends AndroidApplication implements PlatformInter
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        Gdx.app.log("AndroidLauncher", "onRequestPermissionsResult - requestCode=" + requestCode);
         if (requestCode == WRITE_REQUEST_CODE) {
-            game.message(Const.MSG_FILE_PERMISSION,
-                    grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
+            boolean granted = grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
+            Gdx.app.log("AndroidLauncher", "WRITE_EXTERNAL_STORAGE permission granted: " + granted);
+            game.message(Const.MSG_FILE_PERMISSION, granted);
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Gdx.app.log("AndroidLauncher", "onActivityResult called - requestCode=" + requestCode + ", resultCode=" + resultCode);
         if (requestCode == TREE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             if (data != null) {
+                Gdx.app.log("AndroidLauncher", "Directory selected successfully");
                 Uri uri = data.getData();
                 SharedPreferences prefs = getSharedPreferences("TheQuarry-Android", MODE_PRIVATE);
                 prefs.edit().putString("EXTERNAL_URI", uri.toString()).commit();
@@ -371,6 +381,9 @@ public class AndroidLauncher extends AndroidApplication implements PlatformInter
 
     @Override
     public Object message(int messageCode, final Object payload) {
+        if (messageCode != -123) {
+            Gdx.app.log("AndroidLauncher", "message called - code=" + messageCode + ", payload=" + payload);
+        }
         switch (messageCode) {
             case MSG_EXCEPTION: {
                 StringWriter sw = new StringWriter();

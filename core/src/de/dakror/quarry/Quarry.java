@@ -97,6 +97,7 @@ public class Quarry extends GameBase implements PlatformInterface {
 
     @Override
     public void create() {
+        Gdx.app.log("Quarry", "=== Game create() started ===");
         super.create();
 
         safeInsets = (int[]) pi.message(Const.MSG_PADDING, null);
