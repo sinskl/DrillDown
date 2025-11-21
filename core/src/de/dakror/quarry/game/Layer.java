@@ -396,6 +396,13 @@ public class Layer implements Disposable, Savable, Listener<Layer> {
         }
 
         shaper.end();
+        
+        // Draw map boundary
+        shaper.begin(ShapeType.Line);
+        shaper.setColor(0.5f, 0.5f, 0.5f, 0.3f); // Light gray with 30% opacity
+        shaper.rect(0, 0, width * Const.TILE_SIZE, height * Const.TILE_SIZE);
+        shaper.end();
+        
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
         if (Game.DRAW_DEBUG) {
