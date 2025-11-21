@@ -43,8 +43,10 @@ public class CRecipeSlotStorage extends CInventory {
             if (r.getInput() == null || r.getInput().entries.length <= index) continue;
 
             Amount a = r.getInput().entries[index];
-            if ((a.getCat() != null && item.categories.contains(a.getCat()) && getSum(a.getCat()) < a.getAmount())
-                    || (a.getItem() != null && (a.getItem() == item || a.getItem() == Item.base(item)) && get(item) < a.getAmount())) return true;
+            // 提高缓存容量到配方量的10倍，支持批处理
+            int maxCacheAmount = a.getAmount() * 10;
+            if ((a.getCat() != null && item.categories.contains(a.getCat()) && getSum(a.getCat()) < maxCacheAmount)
+                    || (a.getItem() != null && (a.getItem() == item || a.getItem() == Item.base(item)) && get(item) < maxCacheAmount)) return true;
         }
 
         return false;
@@ -57,8 +59,10 @@ public class CRecipeSlotStorage extends CInventory {
             if (r.getInput() == null || r.getInput().entries.length <= index) continue;
 
             Amount a = r.getInput().entries[index];
-            if ((a.getCat() != null && item.categories.contains(a.getCat()) && getSum(a.getCat()) + amount <= a.getAmount())
-                    || (a.getItem() != null && (a.getItem() == item || a.getItem() == Item.base(item) && get(item) + amount <= a.getAmount()))) {
+            // 提高缓存容量到配方量的10倍，支持批处理
+            int maxCacheAmount = a.getAmount() * 10;
+            if ((a.getCat() != null && item.categories.contains(a.getCat()) && getSum(a.getCat()) + amount <= maxCacheAmount)
+                    || (a.getItem() != null && (a.getItem() == item || a.getItem() == Item.base(item) && get(item) + amount <= maxCacheAmount))) {
                 addUnsafe(item, amount);
                 return true;
             }
