@@ -24,6 +24,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.WindowedMean;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -485,19 +486,46 @@ public abstract class ProducerStructure extends PausableStructure<ProducerSchema
             
             // 添加批处理控制 UI
             if (canUseBatchProcessing()) {
-                Table batchControlTable = new Table();
-                batchControlTable.padTop(10);
+                Table mainContainer = new Table();
+                mainContainer.setBackground(Quarry.Q.skin.getDrawable("panel_metal"));
+                mainContainer.pad(15);
                 
-                Label batchLabel = new Label("批处理:", Quarry.Q.skin, "small-font", Color.WHITE);
-                batchControlTable.add(batchLabel).padRight(10);
+                // 配方表
+                mainContainer.add(recipeTable).growX().row();
                 
-                // 创建批处理倍率选择按钮
-                TextButton[] batchButtons = new TextButton[4];
+                // 添加分隔线
+                Image separator = new Image(Quarry.Q.skin.getDrawable("separator_horizontal"));
+                mainContainer.add(separator).growX().padTop(10).padBottom(10).row();
+                
+                // 批处理控制面板
+                Table batchPanel = new Table();
+                
+                // 标题行
+                Table titleRow = new Table();
+                Label batchTitle = new Label("Batch Processing", Quarry.Q.skin, "small-font", Color.LIGHT_GRAY);
+                batchTitle.setAlignment(Align.center);
+                titleRow.add(batchTitle).center().growX();
+                batchPanel.add(titleRow).growX().padBottom(8).row();
+                
+                // 倍率按钮行
+                Table buttonRow = new Table();
                 int[] batchSizes = {1, 2, 4, 8};
+                TextButton[] batchButtons = new TextButton[4];
                 
                 for (int i = 0; i < batchSizes.length; i++) {
                     final int batchSizeValue = batchSizes[i];
-                    batchButtons[i] = new TextButton(batchSizeValue + "x", Quarry.Q.skin);
+                    
+                    // 创建按钮样式
+                    TextButton.TextButtonStyle style = new TextButton.TextButtonStyle(Quarry.Q.skin.get("default", TextButton.TextButtonStyle.class));
+                    
+                    // 如果当前选中这个倍率，使用高亮样式
+                    if (batchSizeValue == this.batchSize) {
+                        style = new TextButton.TextButtonStyle(style);
+                        style.fontColor = Color.WHITE;
+                        style.checked = Quarry.Q.skin.getDrawable("button_pressed");
+                    }
+                    
+                    batchButtons[i] = new TextButton(batchSizeValue + "x", style);
                     batchButtons[i].setDisabled(batchSizeValue > 1 && !hasEnoughInputsForBatch(batchSizeValue));
                     
                     if (batchSizeValue == this.batchSize) {
@@ -512,15 +540,16 @@ public abstract class ProducerStructure extends PausableStructure<ProducerSchema
                         }
                     });
                     
-                    batchControlTable.add(batchButtons[i]).width(40).padRight(5);
+                    // 添加按钮到行，使用相等的宽度
+                    buttonRow.add(batchButtons[i]).width(45).height(32).padRight(i < batchSizes.length - 1 ? 8 : 0);
                 }
                 
-                // 主容器，包含配方表和批处理控制
-                Table containerTable = new Table();
-                containerTable.add(recipeTable).row();
-                containerTable.add(batchControlTable);
+                batchPanel.add(buttonRow).center();
                 
-                ui.setActor(containerTable);
+                // 添加批处理面板到主容器
+                mainContainer.add(batchPanel).growX();
+                
+                ui.setActor(mainContainer);
             } else {
                 ui.setActor(recipeTable);
             }
