@@ -303,10 +303,8 @@ public abstract class ProducerStructure extends PausableStructure<ProducerSchema
         if (size > 8) size = 8;
         if (this.batchSize != size) {
             this.batchSize = size;
-            if (activeRecipe != null) {
-                // 更新电力需求
-                powerCapacity = activeRecipe.getPower() * batchSize;
-            }
+            // 重置生产状态，让机器在下次更新时重新选择配方
+            setRecipe(-1);
         }
     }
 
@@ -316,15 +314,41 @@ public abstract class ProducerStructure extends PausableStructure<ProducerSchema
     }
 
     protected boolean hasEnoughInputsForBatch(int targetBatchSize) {
-        if (activeRecipe == null || activeRecipe.input == null || activeItems == null) {
+        if (activeRecipe == null || activeRecipe.input == null) {
             return false;
         }
         
-        // 检查已有原料是否足够支持目标批处理大小
-        for (int i = 0; i < activeItems.entries.length; i++) {
-            Amount activeItem = activeItems.entries[i];
-            if (activeItem != null && activeItem.getAmount() < targetBatchSize) {
-                return false;
+        // 检查库存中是否有足够的原料支持目标批处理大小
+        for (int i = 0; i < activeRecipe.input.entries.length; i++) {
+            Amount recipeAmount = activeRecipe.input.entries[i];
+            if (recipeAmount != null) {
+                IStorage inventory = inputInventories[i];
+                int neededAmount = recipeAmount.getAmount() * targetBatchSize;
+                
+                if (recipeAmount.getItem() != null) {
+                    // 特定物品
+                    int available = inventory.get(recipeAmount.getItem());
+                    if (available < neededAmount) {
+                        return false;
+                    }
+                } else if (recipeAmount.getCat() != null) {
+                    // 物品类别
+                    Amount[] itemsInCategory = inventory.get(recipeAmount.getCat());
+                    if (itemsInCategory == null) {
+                        return false;
+                    }
+                    
+                    int totalAvailable = 0;
+                    for (Amount item : itemsInCategory) {
+                        if (item != null) {
+                            totalAvailable += item.getAmount();
+                        }
+                    }
+                    
+                    if (totalAvailable < neededAmount) {
+                        return false;
+                    }
+                }
             }
         }
         
@@ -363,14 +387,14 @@ public abstract class ProducerStructure extends PausableStructure<ProducerSchema
                                     sum += e.getAmount();
                                 }
                             }
-                            if (sum < en.getAmount()) {
+                            if (sum < en.getAmount() * batchSize) {
                                 ready = false;
                                 break;
                             } else {
-                                if (es.length == 1 || es[0].getAmount() == en.getAmount()) {
-                                    inputs[i] = new Amount(es[0].getItem(), en.getAmount());
+                                if (es.length == 1 || es[0].getAmount() >= en.getAmount() * batchSize) {
+                                    inputs[i] = new Amount(es[0].getItem(), en.getAmount() * batchSize);
                                 } else {
-                                    inputs[i] = en;
+                                    inputs[i] = new Amount(es[0].getItem(), sum);
                                 }
                             }
                         } else if (en.getItem() == Item.base(en.getItem())) {
@@ -395,15 +419,15 @@ public abstract class ProducerStructure extends PausableStructure<ProducerSchema
                                 break;
                             }
 
-                            inputs[i] = new Amount(correctAmount.getItem(), en.getAmount());
+                            inputs[i] = new Amount(correctAmount.getItem(), en.getAmount() * batchSize);
                         } else {
                             // given item is a specific item like "CoalOre"
                             int e = ci.get(en.getItem());
-                            if (e < en.getAmount()) {
+                            if (e < en.getAmount() * batchSize) {
                                 ready = false;
                                 break;
                             }
-                            inputs[i] = new Amount(en.getItem(), en.getAmount());
+                            inputs[i] = new Amount(en.getItem(), en.getAmount() * batchSize);
                         }
                     }
                 }
@@ -424,6 +448,8 @@ public abstract class ProducerStructure extends PausableStructure<ProducerSchema
                         Game.G.ui.updateStructureUIInventory();
 
                     activeItems = new Items(inputs);
+                    // 存储选择的批处理倍率
+                    // 保存 activeItems 包含的 batchSize 信息，因为我们已经将批处理倍率应用到 inputs 中了
                     setRecipe(index);
                     return;
                 }
@@ -604,6 +630,21 @@ public abstract class ProducerStructure extends PausableStructure<ProducerSchema
 
     protected void doProductionStep() {
         if (activeRecipe.output != null) {
+            // 计算实际的批处理倍率 - 如果有 activeItems，根据输入物品数量计算
+            int actualBatchSize = batchSize;
+            if (activeItems != null && activeItems.entries.length > 0 && activeItems.entries[0] != null) {
+                // 假设第一个输入物品的消耗量是基础配方的 amount
+                Amount firstInput = activeRecipe.input.entries[0];
+                if (firstInput != null) {
+                    int baseAmount = firstInput.getAmount();
+                    int actualAmount = activeItems.entries[0].getAmount();
+                    if (baseAmount > 0) {
+                        actualBatchSize = Math.min(actualAmount / baseAmount, batchSize);
+                        actualBatchSize = Math.max(1, actualBatchSize); // 确保至少为1
+                    }
+                }
+            }
+            
             for (int i = 0; i < activeRecipe.output.entries.length; i++) {
                 Amount a = activeRecipe.output.entries[i];
                 if (a != null) {
@@ -613,16 +654,16 @@ public abstract class ProducerStructure extends PausableStructure<ProducerSchema
                             return;
                         }
 
-                        outputInventories[i].addUnsafe(Item.get(a.getItem(), activeItems.entries[((ParameterizedAmount) a).inputParameter].getItem()), a.getAmount() * batchSize);
+                        outputInventories[i].addUnsafe(Item.get(a.getItem(), activeItems.entries[((ParameterizedAmount) a).inputParameter].getItem()), a.getAmount() * actualBatchSize);
                     } else if (a instanceof SameAmount) {
                         if (activeItems == null) {
                             setRecipe(-1);
                             return;
                         }
 
-                        outputInventories[i].addUnsafe(activeItems.entries[((SameAmount) a).inputParameter].getItem(), a.getAmount() * batchSize);
+                        outputInventories[i].addUnsafe(activeItems.entries[((SameAmount) a).inputParameter].getItem(), a.getAmount() * actualBatchSize);
                     } else {
-                        outputInventories[i].addUnsafe(a.getItem(), a.getAmount() * batchSize);
+                        outputInventories[i].addUnsafe(a.getItem(), a.getAmount() * actualBatchSize);
                     }
                 }
             }
