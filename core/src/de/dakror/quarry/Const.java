@@ -71,8 +71,8 @@ public class Const {
     public static final float REFUND_PERCENTAGE = 0.25f;
     public static final float REFUND_CONSIDERATE_PERCENTAGE = 0.8f;
 
-    public static final int DEFAULT_PUMP_OUT_MAX_FLUID = 500;
-    public static final float DEFAULT_PUMP_OUT_DELAY = 0.5f;
+    public static final int DEFAULT_PUMP_OUT_MAX_FLUID = 2000;
+    public static final float DEFAULT_PUMP_OUT_DELAY = 2.0f;
 
     // UI //
     public static final int BUILD_RING_ITEM_SIZE = 100;

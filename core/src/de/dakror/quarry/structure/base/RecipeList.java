@@ -157,9 +157,9 @@ public abstract class RecipeList {
                     Amount e = r.output.entries[i];
 
                     if (outputSizes.size <= i) {
-                        outputSizes.add(e.getAmount() * 2);
+                        outputSizes.add(e.getAmount() * 10);
                     } else {
-                        outputSizes.set(i, Math.max(e.getAmount() * 2, outputSizes.get(i)));
+                        outputSizes.set(i, Math.max(e.getAmount() * 10, outputSizes.get(i)));
                     }
 
                     if (e.getCat() != null)
@@ -175,9 +175,9 @@ public abstract class RecipeList {
                     if (e.getCat() == ItemCategory.Fluid
                             || (e.getItem() != null && e.getItem().categories.contains(ItemCategory.Fluid))) {
                         if (fluidInputs.size <= i) {
-                            fluidInputs.add(e.getAmount() * 2);
+                            fluidInputs.add(e.getAmount() * 10);
                         } else {
-                            fluidInputs.set(i, Math.max(e.getAmount() * 2, fluidInputs.get(i)));
+                            fluidInputs.set(i, Math.max(e.getAmount() * 10, fluidInputs.get(i)));
                         }
                     }
                 }
