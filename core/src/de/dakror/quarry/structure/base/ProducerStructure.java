@@ -26,6 +26,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 
 import de.dakror.common.libgdx.PlatformInterface;
@@ -93,6 +95,7 @@ public abstract class ProducerStructure extends PausableStructure<ProducerSchema
     protected float workDelay;
     protected int activeRecipeIndex;
     protected Recipe activeRecipe;
+    protected int batchSize = 1; // 批处理倍率：1x, 2x, 4x, 8x
 
     protected final IStorage[] inputInventories;
     protected final IStorage[] outputInventories;
@@ -291,6 +294,43 @@ public abstract class ProducerStructure extends PausableStructure<ProducerSchema
         return activeRecipe;
     }
 
+    public int getBatchSize() {
+        return batchSize;
+    }
+
+    public void setBatchSize(int size) {
+        if (size < 1) size = 1;
+        if (size > 8) size = 8;
+        if (this.batchSize != size) {
+            this.batchSize = size;
+            if (activeRecipe != null) {
+                // 更新电力需求
+                powerCapacity = activeRecipe.getPower() * batchSize;
+            }
+        }
+    }
+
+    public boolean canUseBatchProcessing() {
+        // 检查是否解锁了批处理科技，如果没有则返回false
+        return true; // 暂定为true，后续可以添加科技解锁逻辑
+    }
+
+    protected boolean hasEnoughInputsForBatch(int targetBatchSize) {
+        if (activeRecipe == null || activeRecipe.input == null || activeItems == null) {
+            return false;
+        }
+        
+        // 检查已有原料是否足够支持目标批处理大小
+        for (int i = 0; i < activeItems.entries.length; i++) {
+            Amount activeItem = activeItems.entries[i];
+            if (activeItem != null && activeItem.getAmount() < targetBatchSize) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -400,8 +440,8 @@ public abstract class ProducerStructure extends PausableStructure<ProducerSchema
         activeRecipeIndex = index;
         if (index > -1) {
             activeRecipe = getSchema().recipeList.recipes[activeRecipeIndex];
-            workDelay = activeRecipe.workingTime;
-            powerCapacity = activeRecipe.getPower();
+            workDelay = activeRecipe.workingTime; // 批处理不增加工作时间
+            powerCapacity = activeRecipe.getPower() * batchSize; // 批处理需要N倍电力
         } else {
             activeRecipe = null;
             activeItems = null;
@@ -415,7 +455,50 @@ public abstract class ProducerStructure extends PausableStructure<ProducerSchema
         if (activeRecipe == null)
             ui.setActor(waitingLabel);
         else {
-            ui.setActor(GameUi.renderRecipe(Quarry.Q.skin, activeRecipe, /* activeItems, null, */true));
+            Table recipeTable = GameUi.renderRecipe(Quarry.Q.skin, activeRecipe, /* activeItems, null, */true);
+            
+            // 添加批处理控制 UI
+            if (canUseBatchProcessing()) {
+                Table batchControlTable = new Table();
+                batchControlTable.padTop(10);
+                
+                Label batchLabel = new Label("批处理:", Quarry.Q.skin, "small-font", Color.WHITE);
+                batchControlTable.add(batchLabel).padRight(10);
+                
+                // 创建批处理倍率选择按钮
+                TextButton[] batchButtons = new TextButton[4];
+                int[] batchSizes = {1, 2, 4, 8};
+                
+                for (int i = 0; i < batchSizes.length; i++) {
+                    final int batchSizeValue = batchSizes[i];
+                    batchButtons[i] = new TextButton(batchSizeValue + "x", Quarry.Q.skin);
+                    batchButtons[i].setDisabled(batchSizeValue > 1 && !hasEnoughInputsForBatch(batchSizeValue));
+                    
+                    if (batchSizeValue == this.batchSize) {
+                        batchButtons[i].setChecked(true);
+                    }
+                    
+                    batchButtons[i].addListener(new ChangeListener() {
+                        @Override
+                        public void changed(ChangeEvent event, Actor actor) {
+                            setBatchSize(batchSizeValue);
+                            updateUI();
+                        }
+                    });
+                    
+                    batchControlTable.add(batchButtons[i]).width(40).padRight(5);
+                }
+                
+                // 主容器，包含配方表和批处理控制
+                Table containerTable = new Table();
+                containerTable.add(recipeTable).row();
+                containerTable.add(batchControlTable);
+                
+                ui.setActor(containerTable);
+            } else {
+                ui.setActor(recipeTable);
+            }
+            
             timeLabel = ui.findActor("time");
         }
         ui.invalidateHierarchy();
@@ -510,7 +593,7 @@ public abstract class ProducerStructure extends PausableStructure<ProducerSchema
         if (activeRecipe.output != null) {
             for (int i = 0; i < activeRecipe.output.entries.length; i++) {
                 Amount a = activeRecipe.output.entries[i];
-                if (a != null && ((getSchema().outputBuffer && (outputInventories[i].getSize() - outputInventories[i].getCount()) < a.getAmount()) || (!getSchema().outputBuffer && !outputInventories[i].isEmpty()))) {
+                if (a != null && ((getSchema().outputBuffer && (outputInventories[i].getSize() - outputInventories[i].getCount()) < a.getAmount() * batchSize) || (!getSchema().outputBuffer && !outputInventories[i].isEmpty()))) {
                     return false;
                 }
             }
@@ -530,16 +613,16 @@ public abstract class ProducerStructure extends PausableStructure<ProducerSchema
                             return;
                         }
 
-                        outputInventories[i].addUnsafe(Item.get(a.getItem(), activeItems.entries[((ParameterizedAmount) a).inputParameter].getItem()), a.getAmount());
+                        outputInventories[i].addUnsafe(Item.get(a.getItem(), activeItems.entries[((ParameterizedAmount) a).inputParameter].getItem()), a.getAmount() * batchSize);
                     } else if (a instanceof SameAmount) {
                         if (activeItems == null) {
                             setRecipe(-1);
                             return;
                         }
 
-                        outputInventories[i].addUnsafe(activeItems.entries[((SameAmount) a).inputParameter].getItem(), a.getAmount());
+                        outputInventories[i].addUnsafe(activeItems.entries[((SameAmount) a).inputParameter].getItem(), a.getAmount() * batchSize);
                     } else {
-                        outputInventories[i].addUnsafe(a.getItem(), a.getAmount());
+                        outputInventories[i].addUnsafe(a.getItem(), a.getAmount() * batchSize);
                     }
                 }
             }
@@ -573,7 +656,8 @@ public abstract class ProducerStructure extends PausableStructure<ProducerSchema
         b
                 .Float("workDelay", workDelay)
                 .Int("recipe", activeRecipeIndex)
-                .Double("power", powerLevel);
+                .Double("power", powerLevel)
+                .Int("batchSize", batchSize);
 
         b.List("filterInventories", TagType.Compound);
         for (IStorage in : inputInventories) {
@@ -615,6 +699,10 @@ public abstract class ProducerStructure extends PausableStructure<ProducerSchema
         } catch (NBTException e) {
             powerLevel = tag.Float("power", 0);
         }
+
+        batchSize = tag.Int("batchSize", 1); // 默认批处理大小为1
+        if (batchSize < 1) batchSize = 1;
+        if (batchSize > 8) batchSize = 8; // 限制最大批处理大小
 
         activeRecipeIndex = tag.Int("recipe", -1);
         if (activeRecipeIndex > -1) {
