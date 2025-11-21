@@ -481,7 +481,7 @@ public abstract class ProducerStructure extends PausableStructure<ProducerSchema
         if (activeRecipe == null)
             ui.setActor(waitingLabel);
         else {
-            Table recipeTable = GameUi.renderRecipe(Quarry.Q.skin, activeRecipe, /* activeItems, null, */true);
+            Table recipeTable = GameUi.renderRecipe(Quarry.Q.skin, activeRecipe, /* activeItems, null, */true, this.batchSize);
             
             // 添加批处理控制 UI
             if (canUseBatchProcessing()) {

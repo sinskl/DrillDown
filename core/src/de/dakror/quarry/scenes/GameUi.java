@@ -2378,6 +2378,11 @@ public class GameUi implements Ui {
     // Also see ProductionStructure.updateUI()
     public static Table renderRecipe(Skin skin, Recipe recipe,
             /*Items activeInputs, Items activeOutputs, */boolean singleMode) {
+        return renderRecipe(skin, recipe, singleMode, 1);
+    }
+    
+    public static Table renderRecipe(Skin skin, Recipe recipe,
+            /*Items activeInputs, Items activeOutputs, */boolean singleMode, int batchSize) {
         Table table = new Table();
         table.setBackground(skin.getDrawable("panel_metal"));
         table.pad(20);
@@ -2412,7 +2417,7 @@ public class GameUi implements Ui {
 
         if (recipe.getPower() > 0 && !(recipe instanceof GeneratorRecipe)) {
             Cell<?> c = t.add(createResourceTable(25, skin, skin.getDrawable("icon_power"),
-                    formatPowerAmount(recipe.getPower() * 60) + "/s", "small-font"));
+                    formatPowerAmount(recipe.getPower() * batchSize * 60) + "/s", "small-font"));
             if (recipe.getInput() == null)
                 c.padRight(5);
         }
