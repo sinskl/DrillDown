@@ -144,5 +144,33 @@ public class LoadingCompat {
                 typeTag.data = (byte)210;  // Map old ArcWelder to new ID
             }
         }
+        
+        // Automatically unlock OreProcessing tech for old saves
+        // This ensures players can immediately build OreProcessingPlant
+        byte[] sciences = data.ByteArray("Sciences", new byte[0]);
+        if (sciences != null && sciences.length > 0) {
+            // Check if OreProcessing (ID 2) is not already unlocked
+            boolean hasOreProcessing = false;
+            for (byte s : sciences) {
+                if ((s & 0xff) == 2) {  // OreProcessing ID is 2
+                    hasOreProcessing = true;
+                    break;
+                }
+            }
+            
+            // If not unlocked and player has at least Start science (ID 0),
+            // add OreProcessing to the unlocked sciences list
+            if (!hasOreProcessing && sciences.length > 0) {
+                byte[] newSciences = new byte[sciences.length + 1];
+                System.arraycopy(sciences, 0, newSciences, 0, sciences.length);
+                newSciences[newSciences.length - 1] = (byte)2;  // Add OreProcessing
+                
+                // Remove old Sciences tag if it exists, then add the new one
+                if (data.has("Sciences")) {
+                    data.remove("Sciences");
+                }
+                data.add(new ByteArrayTag("Sciences", newSciences));
+            }
+        }
     }
 }
