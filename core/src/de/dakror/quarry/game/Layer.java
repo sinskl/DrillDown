@@ -397,10 +397,32 @@ public class Layer implements Disposable, Savable, Listener<Layer> {
 
         shaper.end();
         
-        // Draw map boundary
-        shaper.begin(ShapeType.Line);
-        shaper.setColor(0.5f, 0.5f, 0.5f, 0.3f); // Light gray with 30% opacity
-        shaper.rect(0, 0, width * Const.TILE_SIZE, height * Const.TILE_SIZE);
+        // Draw map boundary with white glow effect
+        shaper.begin(ShapeType.Filled);
+        shaper.setColor(1f, 1f, 1f, 0.6f); // White with 60% opacity for glow effect
+        // Draw thick border (4 pixels)
+        float borderThickness = 4f;
+        float mapWidth = width * Const.TILE_SIZE;
+        float mapHeight = height * Const.TILE_SIZE;
+        
+        // Top and bottom borders
+        shaper.rect(0, -borderThickness/2, mapWidth, borderThickness);
+        shaper.rect(0, mapHeight - borderThickness/2, mapWidth, borderThickness);
+        
+        // Left and right borders
+        shaper.rect(-borderThickness/2, 0, borderThickness, mapHeight);
+        shaper.rect(mapWidth - borderThickness/2, 0, borderThickness, mapHeight);
+        
+        shaper.end();
+        
+        // Draw inner bright line for stronger glow
+        shaper.begin(ShapeType.Filled);
+        shaper.setColor(1f, 1f, 1f, 0.9f); // Bright white with 90% opacity
+        float innerThickness = 2f;
+        shaper.rect(0, -innerThickness/2, mapWidth, innerThickness);
+        shaper.rect(0, mapHeight - innerThickness/2, mapWidth, innerThickness);
+        shaper.rect(-innerThickness/2, 0, innerThickness, mapHeight);
+        shaper.rect(mapWidth - innerThickness/2, 0, innerThickness, mapHeight);
         shaper.end();
         
         Gdx.gl.glDisable(GL20.GL_BLEND);
