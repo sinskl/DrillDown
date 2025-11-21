@@ -167,7 +167,8 @@ public class LoadingCompat {
                 
                 // Remove old Sciences tag if it exists, then add the new one
                 if (data.has("Sciences")) {
-                    data.remove("Sciences");
+                    Tag oldSciencesTag = data.get("Sciences");
+                    data.remove(oldSciencesTag);
                 }
                 data.add(new ByteArrayTag("Sciences", newSciences));
             }
