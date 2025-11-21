@@ -119,4 +119,30 @@ public class LoadingCompat {
             ((ByteTag) tag).data = 1;
         }
     }
+
+    public void version_123(CompoundTag data) throws NBTException {
+        // Fix StructureType ID changes after adding OreProcessingPlant (ID 74)
+        // This upgrades old saves that used the original ID assignments
+        
+        for (Tag tag : data.query("#Structures byte,#type")) {
+            ByteTag typeTag = (ByteTag) tag;
+            byte oldId = typeTag.data;
+            
+            // Map old IDs to new IDs based on the insertion of OreProcessingPlant at ID 74
+            if (oldId >= 74 && oldId <= 99) {
+                // All IDs from 74-99 were shifted +1 to make room for OreProcessingPlant(74)
+                typeTag.data = (byte)(oldId + 1);
+            } else if (oldId == 100) {
+                // ID 100 (Substation) was shifted to make room for ArcWelder(210) later
+                // but in the eb55b77 commit, ArcWelder was changed from 99 to 210
+                // So Substation stays at 100 in this version's mapping
+                typeTag.data = (byte)100;
+            }
+            // ArcWelder was 99, but in eb55b77 it changed to 210
+            // Old saves with ArcWelder as 99 need to be mapped to 210
+            else if (oldId == 99) {
+                typeTag.data = (byte)210;  // Map old ArcWelder to new ID
+            }
+        }
+    }
 }

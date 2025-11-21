@@ -92,7 +92,7 @@ public class DesktopLauncher implements PlatformInterface {
 
         /////////////////////
 
-        int versionCode = 122;
+        int versionCode = 123;
         String version = "v122";
 
         /////////////////////
