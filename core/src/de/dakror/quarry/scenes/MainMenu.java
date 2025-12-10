@@ -175,17 +175,34 @@ public class MainMenu extends Scene implements Ui {
         seedPrompt = Util.lml("seed-prompt");
         stage.addActor(toast);
 
-        final ImageButton de = Util.id("lang");
-        de.setChecked(Quarry.Q.i18n.getLocale().getLanguage().equals("en"));
-        de.addListener(new ClickListener() {
+        final ImageButton lang = Util.id("lang");
+        // Initialize button state based on current language
+        final String currentLang = Quarry.Q.prefs.getString("language", "en");
+        lang.setChecked("en".equals(currentLang)); // checked for English, unchecked for others
+        lang.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Quarry.Q.sound.play(Quarry.Q.clickSfx);
+
+                // Cycle through languages: en -> de -> zh -> en
+                String currentLang = Quarry.Q.prefs.getString("language", "en");
+                String nextLang;
+                if ("en".equals(currentLang)) {
+                    nextLang = "de";
+                } else if ("de".equals(currentLang)) {
+                    nextLang = "zh";
+                } else {
+                    nextLang = "en";
+                }
+
+                Quarry.Q.prefs.putString("language", nextLang).flush();
+                // Update button state - checked for English, unchecked for others
+                lang.setChecked("en".equals(nextLang));
+
                 alert.show(MainMenu.this, Quarry.Q.i18n.get("alert.language_change"), new Callback<Void>() {
                     @Override
                     public void call(Void data) {}
                 });
-                Quarry.Q.prefs.putBoolean("german", !de.isChecked()).flush();
             }
         });
 
