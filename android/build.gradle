@@ -1,10 +1,12 @@
 android {
     signingConfigs {
         config {
-            keyAlias keypass_alias
-            keyPassword keypass_pwd
-            storeFile file(keypass_file)
-            storePassword keypass_pwd
+            if (keypass_file != null && keypass_file != '' && keypass_file != 'unset') {
+                keyAlias keypass_alias
+                keyPassword keypass_pwd
+                storeFile file(keypass_file)
+                storePassword keypass_pwd
+            }
         }
     }
     compileSdkVersion 30
@@ -52,13 +54,17 @@ android {
             minifyEnabled true
             zipAlignEnabled true
             proguardFiles 'proguard-rules.pro'
-            signingConfig signingConfigs.config
+            if (keypass_file != null && keypass_file != '' && keypass_file != 'unset') {
+                signingConfig signingConfigs.config
+            }
             debuggable false
         }
         debug {
             zipAlignEnabled true
             minifyEnabled false
-            signingConfig signingConfigs.config
+            if (keypass_file != null && keypass_file != '' && keypass_file != 'unset') {
+                signingConfig signingConfigs.config
+            }
         }
     }
     compileOptions {
