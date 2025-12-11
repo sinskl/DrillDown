@@ -60,6 +60,16 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
 
+      - name: Cache Android SDK
+        uses: actions/cache@v3
+        with:
+          path: |
+            /usr/local/lib/android/sdk
+            ~/android-sdk
+          key: ${{ runner.os }}-android-sdk-30
+          restore-keys: |
+            ${{ runner.os }}-android-sdk-
+
       - name: Cache Gradle packages
         uses: actions/cache@v3
         with:
