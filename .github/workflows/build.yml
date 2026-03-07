@@ -81,6 +81,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Setup keystore for signing
+        if: ${{ secrets.KEYSTORE_BASE64 != '' && secrets.KEYSTORE_PASSWORD != '' && secrets.KEYSTORE_ALIAS != '' }}
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
