@@ -88,11 +88,15 @@ jobs:
         shell: bash
         run: |
           if [[ -n "$KEYSTORE_BASE64" && -n "$KEYSTORE_PASSWORD" && -n "$KEYSTORE_ALIAS" ]]; then
-            echo "$KEYSTORE_BASE64" | base64 -d > keystore.jks
-            echo "keypass_pwd=$KEYSTORE_PASSWORD" >> gradle.properties
-            echo "keypass_alias=$KEYSTORE_ALIAS" >> gradle.properties
-            echo "keypass_file=keystore.jks" >> gradle.properties
-            echo "Using signing keystore"
+            if echo "$KEYSTORE_BASE64" | base64 -d > keystore.jks 2>/dev/null; then
+              echo "keypass_pwd=$KEYSTORE_PASSWORD" >> gradle.properties
+              echo "keypass_alias=$KEYSTORE_ALIAS" >> gradle.properties
+              echo "keypass_file=keystore.jks" >> gradle.properties
+              echo "Using signing keystore"
+            else
+              rm -f keystore.jks
+              echo "Invalid signing secrets; continuing with unsigned release APK"
+            fi
           else
             echo "Signing secrets not set; building unsigned release APK"
           fi
