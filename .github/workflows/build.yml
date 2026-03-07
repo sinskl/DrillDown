@@ -46,6 +46,10 @@ jobs:
     name: Build Android
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
+    env:
+      KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+      KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+      KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -81,11 +85,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Setup keystore for signing
-        if: ${{ secrets.KEYSTORE_BASE64 != '' && secrets.KEYSTORE_PASSWORD != '' && secrets.KEYSTORE_ALIAS != '' }}
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+        if: ${{ env.KEYSTORE_BASE64 != '' && env.KEYSTORE_PASSWORD != '' && env.KEYSTORE_ALIAS != '' }}
         run: |
           echo "$KEYSTORE_BASE64" | base64 -d > keystore.jks
           echo "keypass_pwd=$KEYSTORE_PASSWORD" >> gradle.properties
